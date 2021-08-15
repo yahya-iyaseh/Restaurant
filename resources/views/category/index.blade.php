@@ -47,7 +47,7 @@
                       </td>
                     </tr>
 
-
+                    
                   @endforeach
                   <tr>
                     <td colspan="4">
@@ -60,6 +60,9 @@
               </table>
             @else
               <div class="alert alert-warning">There is no Categorey</div>
+              <div class="d-grid gap-2">
+                        <a href="{{ route('category.create') }}" class="btn btn-success" type="button">Create New Category</a>
+                      </div>
             @endif
           </div>
         </div>

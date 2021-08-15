@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Food;
+use App\Models\Category;
 class FoodController extends Controller
 {
     /**
@@ -13,8 +14,8 @@ class FoodController extends Controller
      */
     public function index()
     {
-        //
-
+        $foods = Food::orderByRaw('category_id')->paginate(10);
+        return view('food.index', compact('foods'));
     }
 
     /**
@@ -90,6 +91,8 @@ class FoodController extends Controller
     public function edit($id)
     {
         //
+        $food = Food::find($id);
+        return view('food.edit', compact('food'));
     }
 
     /**
@@ -101,7 +104,28 @@ class FoodController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required',
+            'description' => 'required',
+            'price' => 'required|integer',
+            'category' => 'required',
+            'image' => 'mimes:jpg, jpeg, png'
+        ]);
+        $food = Food::find($id);
+        $name = $food->image;
+        if($request->hasfile('image')){
+            $image = $request->file('image');
+            $name = time().'.'.$image->getClientOriginalExtension();
+            $dest = public_path('images');
+            $image->move($dest, $name);
+        }
+        $food->name = $request->get('name');
+        $food->description = $request->get('description');
+        $food->price = $request->get('price');
+        $food->category_id = $request->get('category');
+        $food->image = $name;
+        $food->save();
+        return redirect()->route('food.index')->with('message-update', 'update');
     }
 
     /**
@@ -113,5 +137,16 @@ class FoodController extends Controller
     public function destroy($id)
     {
         //
+         Food::find($id)->delete();
+        return redirect()->back()->with('message-delete', 'delete');
+    }
+    public function list(){
+        $categories = Category::with('food')->get();
+        return view('list', compact('categories'));
+    }
+    public function showItem($id){
+
+        $food = Food::find($id);
+        return view('food.show', compact('food'));
     }
 }

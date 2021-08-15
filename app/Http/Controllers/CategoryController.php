@@ -103,6 +103,7 @@ class CategoryController extends Controller
     {
         //
         $category = Category::find($id);
+        $category->children()->delete(); 
         $category->delete();
         // return 'fuck';
         return redirect()->route('category.index')->with('message-delete', 'The Category Was Deleted');

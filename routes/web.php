@@ -16,8 +16,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
+Auth::routes(['register' => false]);
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::resource('/category', 'CategoryController');
-Route::resource('/food', 'FoodController');
+Route::get('/home', 'FoodController@List')->name('home');
+Route::resource('/category', 'CategoryController')->middleware('auth');
+Route::resource('/food', 'FoodController')->middleware('auth');
+Route::get('list', 'FoodController@List');
+Route::get('foods/{id}', 'FoodController@showItem')->name('food.id');
